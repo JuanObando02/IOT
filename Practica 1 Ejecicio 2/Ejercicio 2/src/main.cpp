@@ -93,17 +93,17 @@ void loop() {
 
   // 4. Mostrar resultados por Monitor Serie
   Serial.println("-------------------------------");
-  Serial.printf("LDR:    %4d ADC -> Brillo: %3d%%\n", valorLDR, porcLuz);
+  Serial.printf("LDR:    %4d ADC -> Brillo: %3d%%\r\n", valorLDR, porcLuz);
 
   if (dhtOk) {
-    Serial.printf("DHT22:  Temperatura = %.1f C  |  Humedad = %.1f %%\n",
+    Serial.printf("DHT22:  Temperatura = %.1f C  |  Humedad = %.1f %%\r\n",
                   temperatura, humedad);
   } else {
     Serial.println("DHT22:  Error de lectura (NaN) -- verificar conexion");
   }
 
   if (distancia > 0) {
-    Serial.printf("HC-SR04: Distancia = %.1f cm\n", distancia);
+    Serial.printf("HC-SR04: Distancia = %.1f cm\r\n", distancia);
   } else {
     Serial.println("HC-SR04: Sin respuesta (fuera de rango o timeout)");
   }
