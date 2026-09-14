@@ -24,7 +24,7 @@ void setColor(uint8_t r, uint8_t g, uint8_t b) {
   ledcWrite(CH_R, r);
   ledcWrite(CH_G, g);
   ledcWrite(CH_B, b);
-  Serial.printf("\nColor -> R:%3d  G:%3d  B:%3d\n", r, g, b);
+  Serial.printf("\nColor -> R:%3d  G:%3d  B:%3d\r\n", r, g, b);
 }
 
 void setup() {
