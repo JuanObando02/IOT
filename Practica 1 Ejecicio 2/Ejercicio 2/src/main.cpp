@@ -7,9 +7,9 @@
 #include <DHT.h>
 
 // Pines LED RGB y canales LEDC
-#define PIN_LED_R  25
-#define PIN_LED_G  26
-#define PIN_LED_B  27
+#define PIN_LED_R  26
+#define PIN_LED_G  27
+#define PIN_LED_B  14
 #define CH_R       0
 #define CH_G       1
 #define CH_B       2
@@ -18,9 +18,9 @@
 
 // Pines sensores
 #define PIN_LDR   34    // GPIO de entrada analógica exclusiva (ADC)
-#define PIN_DHT    4    // DHT22 DATA (one-wire)
-#define PIN_TRIG   5    // HC-SR04 trigger (salida)
-#define PIN_ECHO  18    // HC-SR04 echo   (entrada)
+#define PIN_DHT   33    // DHT22 DATA (one-wire)
+#define PIN_TRIG  25    // HC-SR04 trigger (salida)
+#define PIN_ECHO  32    // HC-SR04 echo   (entrada)
 #define DHT_TYPE  DHT22
 
 DHT dht(PIN_DHT, DHT_TYPE);
@@ -80,7 +80,7 @@ void setup() {
 void loop() {
   // 1. Leer LDR y ajustar brillo del LED
   int valorLDR = analogRead(PIN_LDR);           // rango 0-4095
-  int porcLuz  = map(valorLDR, 0, 4095, 0, 100);
+  int porcLuz  = map(valorLDR, 1600, 4095, 0, 100);
   ajustarBrilloLED(porcLuz);
 
   // 2. Leer DHT22 con validación

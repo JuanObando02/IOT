@@ -1,112 +1,70 @@
 // ============================================================
-// Ejercicio 2: LDR + DHT22 + HC-SR04 con control de brillo
+// Ejercicio 1: Control LED RGB con PWM (módulo LEDC)
 // Práctica Capa de Dispositivos -- IoT USC
 // ============================================================
 
 #include <Arduino.h>
-#include <DHT.h>
 
-// Pines LED RGB y canales LEDC
-#define PIN_LED_R  25
-#define PIN_LED_G  26
-#define PIN_LED_B  27
-#define CH_R       0
-#define CH_G       1
-#define CH_B       2
-#define PWM_FREQ   5000
-#define PWM_BITS   8
+// Pines del LED RGB (cátodo común)
+#define PIN_LED_R  26
+#define PIN_LED_G  27
+#define PIN_LED_B  14
 
-// Pines sensores
-#define PIN_LDR   34    // GPIO de entrada analógica exclusiva (ADC)
-#define PIN_DHT    4    // DHT22 DATA (one-wire)
-#define PIN_TRIG   5    // HC-SR04 trigger (salida)
-#define PIN_ECHO  18    // HC-SR04 echo   (entrada)
-#define DHT_TYPE  DHT22
+// Canales LEDC (el ESP32 tiene 16 canales disponibles: 0-15)
+#define CH_R  0
+#define CH_G  1
+#define CH_B  2
 
-DHT dht(PIN_DHT, DHT_TYPE);
+// Configuración PWM
+#define PWM_FREQ  5000   // Frecuencia: 5 kHz
+#define PWM_BITS  8      // Resolución: 8 bits (0-255)
 
-// ---- Funciones auxiliares ----
-
-// Establece color RGB del LED
+// Establece el color RGB del LED mediante PWM
 void setColor(uint8_t r, uint8_t g, uint8_t b) {
   ledcWrite(CH_R, r);
   ledcWrite(CH_G, g);
   ledcWrite(CH_B, b);
-}
-
-// Ajusta el LED a blanco con brillo proporcional al porcentaje (0-100)
-void ajustarBrilloLED(int porcentaje) {
-  porcentaje = constrain(porcentaje, 0, 100);
-  uint8_t val = (uint8_t) map(porcentaje, 0, 100, 0, 255);
-  setColor(val, val, val);
-}
-
-// Mide distancia con HC-SR04; devuelve cm o -1 si hay timeout
-float medirDistancia() {
-  digitalWrite(PIN_TRIG, LOW);
-  delayMicroseconds(2);
-  digitalWrite(PIN_TRIG, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(PIN_TRIG, LOW);
-
-  long duracion = pulseIn(PIN_ECHO, HIGH, 30000); // timeout 30 ms
-  if (duracion == 0) return -1.0f;
-  return (duracion * 0.0343f) / 2.0f;
+  Serial.printf("Color -> R:%3d  G:%3d  B:%3d\r\n", r, g, b);
 }
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("=== Ejercicio 2: LDR + DHT22 + HC-SR04 ===");
+  Serial.println("=== Ejercicio 1: LED RGB con PWM ===");
 
-  // Configurar LED PWM
+  // Configurar los tres canales LEDC
   ledcSetup(CH_R, PWM_FREQ, PWM_BITS);
   ledcSetup(CH_G, PWM_FREQ, PWM_BITS);
   ledcSetup(CH_B, PWM_FREQ, PWM_BITS);
+
+  // Asignar cada canal a su pin GPIO
   ledcAttachPin(PIN_LED_R, CH_R);
   ledcAttachPin(PIN_LED_G, CH_G);
   ledcAttachPin(PIN_LED_B, CH_B);
 
-  // Configurar HC-SR04
-  pinMode(PIN_TRIG, OUTPUT);
-  pinMode(PIN_ECHO, INPUT);
-
-  // Inicializar DHT22
-  dht.begin();
-  delay(2000); // Tiempo de estabilización del DHT22
-
-  Serial.println("Sistema listo. Leyendo sensores cada 2 s...");
+  Serial.println("PWM configurado: 5 kHz, 8 bits, 3 canales");
 }
 
 void loop() {
-  // 1. Leer LDR y ajustar brillo del LED
-  int valorLDR = analogRead(PIN_LDR);           // rango 0-4095
-  int porcLuz  = map(valorLDR, 0, 4095, 0, 100);
-  ajustarBrilloLED(porcLuz);
+  // --- Secuencia de colores básicos ---
+  Serial.println("-- Secuencia de colores --");
+  setColor(255,   0,   0); delay(800);  // Rojo
+  setColor(  0, 255,   0); delay(800);  // Verde
+  setColor(  0,   0, 255); delay(800);  // Azul
+  setColor(255, 255, 255); delay(800);  // Blanco
+  setColor(255, 255,   0); delay(800);  // Amarillo
+  setColor(  0, 255, 255); delay(800);  // Cian
+  setColor(255,   0, 255); delay(800);  // Magenta
+  setColor(  0,   0,   0); delay(800);  // Apagado
 
-  // 2. Leer DHT22 con validación
-  float temperatura = dht.readTemperature();
-  float humedad     = dht.readHumidity();
-  bool dhtOk = !isnan(temperatura) && !isnan(humedad);
-
-  // 3. Medir distancia ultrasónica
-  float distancia = medirDistancia();
-
-  // 4. Mostrar resultados por Monitor Serie
-  Serial.println("-------------------------------");
-  Serial.printf("LDR:    %4d ADC -> Brillo: %3d%%\n", valorLDR, porcLuz);
-
-  if (dhtOk) {
-    Serial.printf("DHT22:  Temperatura = %.1f C  |  Humedad = %.1f %%\n",
-                  temperatura, humedad);
-  } else {
-    Serial.println("DHT22:  Error de lectura (NaN) -- verificar conexion");
+  // --- Efecto fade en canal rojo: 0 -> 255 -> 0 ---
+  Serial.println("-- Efecto fade rojo --");
+  for (int v = 0; v <= 255; v += 5) {
+    setColor(v, 0, 0);
+    delay(20);
   }
-
-  if (distancia > 0) {
-    Serial.printf("HC-SR04: Distancia = %.1f cm\n", distancia);
-  } else {
-    Serial.println("HC-SR04: Sin respuesta (fuera de rango o timeout)");
+  for (int v = 255; v >= 0; v -= 5) {
+    setColor(v, 0, 0);
+    delay(20);
   }
-
-  delay(2000); // DHT22 requiere mínimo 2 s entre lecturas
+  delay(500);
 }
