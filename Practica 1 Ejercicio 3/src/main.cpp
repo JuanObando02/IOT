@@ -114,7 +114,7 @@ bool inicializarMPU6050() {
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("\n=== Sistema Integrado IoT USC ===");
+  Serial.println("\n=== IoT USC ===");
 
   // 1. Configurar LED PWM
   ledcSetup(CH_R, PWM_FREQ, PWM_BITS);
