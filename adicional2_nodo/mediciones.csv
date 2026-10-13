@@ -1,0 +1,10 @@
+distancia_m,rssi_wifi_dbm,rssi_ble_dbm,espnow_entrega_pct,espnow_lat_ms,wifi_lat_ms,obstaculos
+1,,,100.0,1.79,,silla
+1,,,92.0,2.39,,silla
+1,,,82.0,2.06,,silla
+1,,,20.0,2.88,,con obstaculos
+1,,,32.0,4.88,,con obstaculos
+1,,,8.0,4.39,,con obstaculos
+3,,,0.0,,,sin obstaculos
+3,,,0.0,,,sin obstaculos
+3,,,10.0,10.87,,sin obstaculos

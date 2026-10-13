@@ -110,6 +110,14 @@ bool inicializarMPU6050() {
   return (whoAmI == 0x68 || whoAmI == 0x72);
 }
 
+String clasificarOrientacion(float pitch, float roll, float azG) {
+ if (azG < -0.8f) return "INVERTIDO";
+ if (abs(pitch) >= 75.0f || abs(roll) >= 75.0f) return "VERTICAL";
+ if (abs(pitch) >= 15.0f || abs(roll) >= 15.0f) return "INCLINADO";
+ return "PLANO";
+}
+
+
 // ================= SETUP =====================
 
 void setup() {
