@@ -11,8 +11,8 @@
 
 
 // ---- Credenciales de la red (modificar) ----
-const char* WIFI_SSID = "USC-LIBRE-1";
-const char* WIFI_PASS = "juan12345";
+const char* WIFI_SSID = "PC-SEBASTIAN";
+const char* WIFI_PASS = "Juan12345";
 
 // ---- Grupo (modificar: grupo01, grupo02, ...) ----
 #define GRUPO "GRUPO_08"
